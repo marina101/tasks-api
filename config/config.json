@@ -1,6 +1,10 @@
 {
   "development":  {
-    "use_env_variable": "LOCAL_TASKS_DB"
+    "username": "tasks",
+    "password": null,
+    "database": "tasks_development",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "test": {
     "username": "root",

@@ -1,10 +1,19 @@
 const express = require('express');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(logger('dev'));
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(require('./controllers/users'));
 
-// PORT
-const port = process.env.PORT || 3000;
+require('./controllers/routes')(app);
+app.get('*', (req, res) => res.status(200).send({
+	message: 'Welcome!'
+}));
 
-app.listen(port, () => console.log(`Listening on port ${port}...`)); 
+
+module.exports = app;
