@@ -27,6 +27,7 @@ module.exports = {
       houseId: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
+        allowNull: false,
         references: {
           model: 'Houses',
           key: 'id',

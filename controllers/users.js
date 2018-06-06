@@ -1,83 +1,95 @@
-const express = require('express')
-const router = express.Router();
-const Joi = require('joi');
+const User = require('../models').User;
 
-const users = [
-	{ id: 1, name: 'marina'},
-	{ id: 2, name: 'eric'}
-]
+module.exports = {
+	create(req,res) {
+		return User
+			.create({
+				name: req.body.name,
+				email: req.body.email,
+				houseId: req.params.houseId
+			})
+			.then(user => res.status(201).send(user))
+			.catch(error => res.status(400).send(error));
+	},
 
-router.get('/', (req, res) => {
-	res.send('Hello World');
+	update(req, res) {
+		return User
+		  .find({
+		  	where: {
+		  		id: req.params.userId,
+		  		houseId: req.params.houseId
+		  	},
+		  })
+		  .then(user => {
+		  	if (!user) {
+		  		return res.status(404).send({
+		  			message: 'User not found'
+		  		})
+		  	}
 
-});
+		  	return user
+		  	  .update({
+		  	  	name: req.body.name || user.name,
+		  	  	email: req.body.email || user.email
+		  	  })
+		  	  .then(updatedUser => res.status(200).send(updatedUser))
+		  	  .catch(error => res.status(400).send(error));
 
-router.get('/api/users', (req, res) => {
-	res.send(users);
-})
+		  })
+		  .catch(error => res.status(400).send(error));
+	},
 
-router.get('/api/users/:id', (req, res) => {
-	let user = users.find((u) => { 
-		return u.id === parseInt(req.params.id)
-	 })
-	
-	if (!user) return res.status(404).send('The user with the given id was not found');
+	destroy(req, res) {
+		return User
+		  .find({
+		  	where: {
+		  		id: req.params.userId,
+		  		houseId: req.params.houseId
+		  	}
+		  })
+		  .then(user => {
+		  	if (!user) {
+		  		return res.status(404).send({
+		  			message: 'User not found'
+		  		})
+		  	}
 
-	res.send(user);
-});
+		  	return user
+		  	  .destroy()
+		  	  .then(() => res.status(200).send({ message: 'User deleted successfully '}))
+		  	  .catch(error => res.status(400).send(error));
+		  })
+		  .catch((error) => res.status(400).send(error));
+	},
 
-router.post('/api/users', (req, res) => {
-	const { error } = validateUser(req.body);
+	index(req, res) {
+  	return User
+  	  .findAll({
+		  	where: {
+		  		houseId: req.params.houseId
+		  	}
+  	  })
+  	  .then(users => res.status(200).send(users))
+  	  .catch(error => res.status(400).send(error))
+  },
 
-	if (error) return res.status(400).send(error.details[0].message);
+  show(req, res) {
+  	return User
+  	  .find({
+		  	where: {
+		  		id: req.params.userId,
+		  		houseId: req.params.houseId
+		  	},
+		  })
+  	  .then((user) => {
+  	  	if (!user) {
+  	  		return res.status(404).send({
+  	  			message: 'User not found'
+  	  		});
+  	  	}
 
-	const user = {
-		id: users.length + 1,
-		name: req.body.name
-	}
-
-	users.push(user);
-	res.send(user);
-});
-
-router.put('/api/users/:id', (req, res) => {
-	let user = users.find((u) => { 
-		return u.id === parseInt(req.params.id)
-	 })
-	
-	if (!user) return res.status(404).send('The user with the given id was not found');
-
-	const { error } = validateUser(req.body);
-
-	if (error) return res.status(400).send(error.details[0].message);
-
-	user.name = req.body.name
-	res.send(user);
-})
-
-router.delete('/api/users/:id', (req, res) => {
-	let user = users.find((u) => { 
-		return u.id === parseInt(req.params.id)
-	 })
-	
-	if (!user) return res.status(404).send('The user with the given id was not found');
-
-	const index = users.indexOf(user);
-	console.log('index of user ' + index);
-
-	users.splice(index, 1);
-	console.log('after deleteion, users array' + users);
-
-	res.send(user);
-});
-
-function validateUser(user) {
-	const schema = {
-		name: Joi.string().min(2).required()
-	};
-
-	return Joi.validate(user, schema);
-}
-
-module.exports = router;
-
+  	  	return res.status(200).send(user);
+  	  })
+  	  .catch(error => res.status(400).send(error));
+  },
+};
