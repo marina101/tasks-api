@@ -1,16 +1,9 @@
 const Task = require('../models').Task;
 const moment = require('moment');
 
-const getEndAt = () => {
-	const dayOfWeek = moment().day('monday').hour(0).minute(0).second(0);
-	const endOfToday = moment().hour(23).minute(59).second(59);
-
-	return (dayOfWeek.isBefore(endOfToday) ? dayOfWeek.add(1, 'weeks') : dayOfWeek)
-}
-
 module.exports = {
 	create(req,res) {
-		let theEndOfTime = getEndAt();
+		let theEndOfTime = moment().day('monday').hour(0).minute(0).second(0).add(1, 'weeks');
 		return Task
 			.create({
 				name: req.body.name,
