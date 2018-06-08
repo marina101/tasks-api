@@ -1,4 +1,5 @@
 const User = require('../models').User;
+const Task = require('../models').Task;
 
 module.exports = {
 	create(req,res) {
@@ -76,10 +77,14 @@ module.exports = {
   show(req, res) {
   	return User
   	  .find({
-		  	where: {
-		  		id: req.params.userId,
-		  		houseId: req.params.houseId
-		  	},
+			  	where: {
+			  		id: req.params.userId,
+			  		houseId: req.params.houseId
+			  	},
+			  	include: [{
+			  		model: Task,
+			  		as: 'tasks',
+			  	}]
 		  })
   	  .then((user) => {
   	  	if (!user) {

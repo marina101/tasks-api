@@ -1,5 +1,6 @@
 const House = require('../models').House;
 const User = require('../models').User;
+const Task = require('../models').Task;
 
 module.exports = {
   create(req, res) {
@@ -27,6 +28,10 @@ module.exports = {
   	  	include: [{
   	  		model: User,
   	  		as: 'users',
+  	  	},
+  	  	{
+  	  		model: Task,
+  	  		as: 'tasks'
   	  	}],
   	  })
   	  .then(house => {
